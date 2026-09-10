@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en" data-theme="night">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy policy — Sudoku for Omarchy</title>
+    <meta
+      name="description"
+      content="What Sudoku accesses, where your data goes, and how your privacy is protected. For the desktop game and this website."
+    />
+    <meta name="theme-color" content="#1a1b26" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/site.css" />
+    <script src="assets/site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="Sudoku home">
+          <img class="brand-icon" src="assets/favicon.svg" alt="" aria-hidden="true" />
+          <span>sudoku<span class="accent">.</span></span>
+        </a>
+
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="index.html#gameplay">Gameplay</a>
+          <a href="index.html#ergonomics">Ergonomics</a>
+          <a href="index.html#install">Install</a>
+          <a href="https://github.com/parnoldx/sudoku" target="_blank" rel="noopener noreferrer">
+            GitHub <span aria-hidden="true">↗</span>
+          </a>
+          <button
+            class="theme-button"
+            type="button"
+            data-theme-toggle
+            hidden
+            aria-label="Change color theme"
+          >
+            <span class="theme-swatch" aria-hidden="true"></span>
+            <span data-theme-name>Tokyo Night</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <div class="container">
+        <header class="legal-hero">
+          <div class="breadcrumb">
+            <a href="index.html">sudoku</a> / privacy policy
+          </div>
+          <div class="eyebrow">THE DETAILS, IN THE OPEN</div>
+          <h1>Privacy policy<span class="accent">.</span></h1>
+          <p class="lede">
+            Sudoku is designed with a simple principle: your puzzle progress belongs exclusively on your computer. Zero telemetry, zero analytics, zero network calls.
+          </p>
+          <p class="legal-date">
+            Effective <time datetime="2026-09-10">September 10, 2026</time> · Maintained by Peter Arnold (parnoldx)
+          </p>
+        </header>
+
+        <div class="legal-layout">
+          <nav class="legal-nav" aria-label="On this page">
+            <p>On this page</p>
+            <a href="#desktop-game">Desktop application</a>
+            <a href="#local-storage">Local storage &amp; files</a>
+            <a href="#website">This website</a>
+            <a href="#third-parties">Third-party services</a>
+            <a href="#contact">Contact &amp; source</a>
+          </nav>
+
+          <article class="legal-body">
+            <div class="legal-callout">
+              <p>
+                <strong>Summary:</strong> Sudoku does not collect, transmit, or monetize your data. The desktop application runs entirely offline.
+              </p>
+            </div>
+
+            <section id="desktop-game">
+              <h2><span class="index">01</span> The desktop application</h2>
+              <p>
+                Sudoku for Omarchy is a standalone desktop game built with PySide6 and Qt Quick. It makes <strong>no network requests</strong> of any kind.
+              </p>
+              <ul>
+                <li>No telemetry, tracking pixels, or user behavior tracking.</li>
+                <li>No crash reporting to external servers.</li>
+                <li>No user account or cloud authentication required.</li>
+                <li>Runs completely isolated on your machine.</li>
+              </ul>
+            </section>
+
+            <section id="local-storage">
+              <h2><span class="index">02</span> Local files and storage</h2>
+              <p>
+                All game state data is stored locally in standard Linux XDG directories at <code>~/.local/share/sudoku/</code>:
+              </p>
+              <ul>
+                <li><strong>highscores.json:</strong> Records your personal high scores for Easy, Medium, Hard, and Master difficulties.</li>
+                <li><strong>savegame.json:</strong> Preserves your active puzzle board, timer, notes, and error count so you can resume where you left off.</li>
+              </ul>
+              <p>
+                These files are plain JSON, readable by you, and never sent anywhere. Deleting the folder clears all data cleanly.
+              </p>
+            </section>
+
+            <section id="website">
+              <h2><span class="index">03</span> This website</h2>
+              <p>
+                This website is hosted statically via GitHub Pages. We do not use cookies, advertising trackers, or fingerprinting scripts.
+              </p>
+              <p>
+                Your color theme preference (Tokyo Night or Everforest) is saved locally in your browser’s <code>localStorage</code> under <code>sudoku-theme</code>. It is never transmitted across the network.
+              </p>
+            </section>
+
+            <section id="third-parties">
+              <h2><span class="index">04</span> Third-party hosting</h2>
+              <p>
+                Because this website is hosted on GitHub Pages, GitHub (Microsoft) may collect standard web server access logs (such as your IP address, browser user-agent, and timestamp) in accordance with <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub's Privacy Statement</a>.
+              </p>
+            </section>
+
+            <section id="contact">
+              <h2><span class="index">05</span> Source code and inquiries</h2>
+              <p>
+                The complete source code of Sudoku and this website is published under open-source licenses. You can audit every line of code on <a href="https://github.com/parnoldx/sudoku" target="_blank" rel="noopener noreferrer">GitHub</a>.
+              </p>
+            </section>
+
+            <div class="legal-end">
+              <span>Open-source software for Omarchy.</span>
+              <a href="index.html">← Return to home</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-top">
+          <a class="brand" href="index.html">
+            <img class="brand-icon" src="assets/favicon.svg" alt="" aria-hidden="true" />
+            <span>sudoku<span class="accent">.</span></span>
+          </a>
+
+          <nav class="footer-links" aria-label="Footer navigation">
+            <a href="privacy.html">Privacy policy</a>
+            <a href="terms.html">Terms of service</a>
+            <a href="https://github.com/parnoldx/sudoku/issues" target="_blank" rel="noopener noreferrer">Contact ↗</a>
+            <a href="https://github.com/parnoldx/sudoku/blob/master/LICENSE" target="_blank" rel="noopener noreferrer">License ↗</a>
+          </nav>
+        </div>
+
+        <div class="footer-bottom">
+          <span>Created by <a href="https://github.com/parnoldx">Peter Arnold</a> for Omarchy.</span>
+          <span>Also for your desktop: <a href="https://pablousx.github.io/omai/">omai ↗</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
