@@ -26,9 +26,9 @@ Rectangle {
 
         // Undo
         CustomButton {
-            iconText: "↺"
+            iconName: "undo"
             text: ""
-            fontSize: 16
+            fontSize: 14
             implicitWidth: 44
             implicitHeight: 44
             radius: 10
@@ -37,10 +37,10 @@ Rectangle {
 
         // Notes Toggle
         CustomButton {
-            iconText: "✎"
+            iconName: "pencil"
             text: ""
             isActive: game.notesMode
-            fontSize: 15
+            fontSize: 14
             implicitWidth: 44
             implicitHeight: 44
             radius: 10
@@ -74,28 +74,35 @@ Rectangle {
                     fontSize: 19
                     radius: 10
                     isActive: game.highlightNum === parent.num
-                    opacity: parent.isAllPlaced ? 0.35 : 1.0
+                    opacity: parent.isAllPlaced ? 0.45 : 1.0
+                    customTextColor: parent.isAllPlaced ? theme.green : ""
                     onClicked: game.enterNumber(parent.num)
                 }
 
                 // Small count indicator
                 Text {
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 2
+                    anchors.bottomMargin: 3
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: parent.isAllPlaced ? "✓" : (9 - parent.countPlaced).toString()
-                    font.pixelSize: 8
+                    font.pixelSize: 9
                     font.bold: true
-                    color: parent.isAllPlaced ? theme.green : theme.muted
+                    color: {
+                        if (parent.isAllPlaced) return theme.green;
+                        var remaining = 9 - parent.countPlaced;
+                        if (remaining === 1) return theme.yellow;
+                        if (remaining === 2) return theme.orange;
+                        return theme.muted;
+                    }
                 }
             }
         }
 
         // Clear button
         CustomButton {
-            iconText: "⌫"
+            iconName: "clear"
             text: ""
-            fontSize: 16
+            fontSize: 14
             implicitWidth: 44
             implicitHeight: 44
             radius: 10

@@ -15,6 +15,43 @@ Item {
     signal playAgain()
     signal returnToMenu()
 
+    // Multi-colored victory confetti in Omarchy theme colors
+    Repeater {
+        model: 24
+        Rectangle {
+            width: index % 2 === 0 ? 7 : 11
+            height: index % 2 === 0 ? 11 : 7
+            radius: 2
+            x: (root.width / 24) * index + (index % 3 * 8)
+            y: -20
+            color: {
+                var colors = [theme.cyan, theme.magenta, theme.yellow, theme.green, theme.orange, theme.accent];
+                return colors[index % colors.length];
+            }
+            opacity: 0.8
+            rotation: (index * 45) % 360
+
+            SequentialAnimation on y {
+                loops: Animation.Infinite
+                NumberAnimation {
+                    from: -20
+                    to: root.height + 20
+                    duration: 2200 + ((index * 173) % 1500)
+                    easing.type: Easing.Linear
+                }
+            }
+
+            SequentialAnimation on rotation {
+                loops: Animation.Infinite
+                NumberAnimation {
+                    from: 0
+                    to: 360
+                    duration: 1600 + ((index * 127) % 1200)
+                }
+            }
+        }
+    }
+
     Rectangle {
         anchors.centerIn: parent
         width: Math.min(parent.width - 48, 480)

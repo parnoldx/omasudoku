@@ -26,25 +26,28 @@ Rectangle {
     property bool isFlashingWrong: false
     property bool isFlashingCorrect: false
     property bool isWaveCelebrating: false
+    property color waveColor: theme.green
 
     radius: 4
 
     // Background coloring based on state
     color: {
+        if (isWaveCelebrating) return Qt.rgba(waveColor.r, waveColor.g, waveColor.b, 0.45);
         if (isFlashingWrong) return Qt.rgba(theme.red.r, theme.red.g, theme.red.b, 0.4);
-        if (isFlashingCorrect || isWaveCelebrating) return Qt.rgba(theme.green.r, theme.green.g, theme.green.b, 0.45);
+        if (isFlashingCorrect) return Qt.rgba(theme.green.r, theme.green.g, theme.green.b, 0.45);
         if (isSelected) return Qt.rgba(theme.accent.r, theme.accent.g, theme.accent.b, 0.3);
-        if (isMatchingNumber) return Qt.rgba(theme.green.r, theme.green.g, theme.green.b, 0.25);
+        if (isMatchingNumber) return Qt.rgba(theme.cyan.r, theme.cyan.g, theme.cyan.b, 0.22);
         if (isInSameRowOrColOrBox) return Qt.rgba(theme.selection.r, theme.selection.g, theme.selection.b, 0.35);
         if (mouseArea.containsMouse) return theme.lighterBackground;
         return theme.darkBackground;
     }
 
-    border.width: isSelected ? 2 : (isMatchingNumber ? 1 : 0)
+    border.width: isSelected ? 2 : (isMatchingNumber || isWaveCelebrating ? 1 : 0)
     border.color: {
+        if (isWaveCelebrating) return waveColor;
         if (isFlashingWrong) return theme.red;
         if (isSelected) return theme.accent;
-        if (isMatchingNumber) return theme.green;
+        if (isMatchingNumber) return theme.cyan;
         return "transparent";
     }
 
@@ -97,6 +100,25 @@ Rectangle {
         }
     }
 
+    // Floating points popup text
+    Text {
+        id: popupText
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: parent.height * 0.15
+        text: ""
+        font.pixelSize: Math.max(11, Math.floor(root.height * 0.28))
+        font.bold: true
+        color: theme.yellow
+        opacity: 0.0
+        z: 20
+    }
+
+    ParallelAnimation {
+        id: pointsPopupAnim
+        NumberAnimation { target: popupText; property: "opacity"; from: 1.0; to: 0.0; duration: 700; easing.type: Easing.InQuad }
+        NumberAnimation { target: popupText; property: "y"; from: root.height * 0.15; to: -16; duration: 700; easing.type: Easing.OutCubic }
+    }
+
     // Shake animation for errors
     SequentialAnimation {
         id: shakeAnim
@@ -144,6 +166,10 @@ Rectangle {
                     root.isFlashingCorrect = true;
                     flashCorrectTimer.restart();
                     popAnim.restart();
+                    if (root.value > 0) {
+                        popupText.text = "+" + (game.factor * root.value);
+                        pointsPopupAnim.restart();
+                    }
                 } else {
                     root.isFlashingWrong = true;
                     flashWrongTimer.restart();
@@ -154,7 +180,7 @@ Rectangle {
 
         function onRowCompleted(completedRow) {
             if (completedRow === root.row) {
-                // staggered wave
+                root.waveColor = theme.cyan;
                 var delay = root.col * 40;
                 waveTimer.interval = delay;
                 waveTimer.restart();
@@ -163,6 +189,7 @@ Rectangle {
 
         function onColCompleted(completedCol) {
             if (completedCol === root.col) {
+                root.waveColor = theme.magenta;
                 var delay = root.row * 40;
                 waveTimer.interval = delay;
                 waveTimer.restart();
@@ -172,6 +199,7 @@ Rectangle {
         function onBoxCompleted(completedBox) {
             var myBox = Math.floor(root.row / 3) * 3 + Math.floor(root.col / 3);
             if (completedBox === myBox) {
+                root.waveColor = theme.yellow;
                 var boxOffset = (root.row % 3) * 3 + (root.col % 3);
                 waveTimer.interval = boxOffset * 40;
                 waveTimer.restart();

@@ -28,7 +28,7 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 spacing: 8
 
-                // Grid Logo Badge
+                // Grid Logo Badge (Jeweled with Omarchy theme colors)
                 Rectangle {
                     Layout.alignment: Qt.AlignHCenter
                     width: 72
@@ -50,7 +50,14 @@ Item {
                                 width: 14
                                 height: 14
                                 radius: 3
-                                color: (index === 4 || index === 0 || index === 8) ? theme.accent : theme.selection
+                                color: {
+                                    if (index === 0) return theme.green;
+                                    if (index === 2) return theme.cyan;
+                                    if (index === 4) return theme.yellow;
+                                    if (index === 6) return theme.orange;
+                                    if (index === 8) return theme.magenta;
+                                    return theme.selection;
+                                }
                             }
                         }
                     }
@@ -147,23 +154,37 @@ Item {
                         { key: "simple", name: "Easy", clues: "~40 clues", factor: "x28", color: theme.green, desc: "Relaxed pacing, great for quick sessions" },
                         { key: "easy", name: "Medium", clues: "~34 clues", factor: "x56", color: theme.cyan, desc: "Balanced challenge for regular players" },
                         { key: "intermediate", name: "Hard", clues: "~29 clues", factor: "x112", color: theme.orange, desc: "Requires careful deduction & notes" },
-                        { key: "expert", name: "Master", clues: "~25 clues", factor: "x156", color: theme.red, desc: "Intense challenge for puzzle masters" }
+                        { key: "expert", name: "Master", clues: "~25 clues", factor: "x156", color: theme.magenta, desc: "Intense challenge for puzzle masters" }
                     ]
 
                     Rectangle {
                         Layout.fillWidth: true
                         implicitHeight: 110
                         radius: 12
-                        color: cardMouse.containsMouse ? theme.lighterBackground : theme.darkBackground
-                        border.color: cardMouse.containsMouse ? modelData.color : theme.selection
+                        color: cardMouse.containsMouse ? Qt.rgba(modelData.color.r, modelData.color.g, modelData.color.b, 0.12) : theme.darkBackground
+                        border.color: cardMouse.containsMouse ? modelData.color : Qt.rgba(modelData.color.r, modelData.color.g, modelData.color.b, 0.3)
                         border.width: cardMouse.containsMouse ? 2 : 1
+                        clip: true
 
                         Behavior on color { ColorAnimation { duration: 150 } }
                         Behavior on border.color { ColorAnimation { duration: 150 } }
 
+                        // Left vertical accent stripe
+                        Rectangle {
+                            anchors.left: parent.left
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            width: 4
+                            color: modelData.color
+                            opacity: cardMouse.containsMouse ? 1.0 : 0.7
+                        }
+
                         ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: 14
+                            anchors.leftMargin: 18
+                            anchors.rightMargin: 14
+                            anchors.topMargin: 14
+                            anchors.bottomMargin: 14
                             spacing: 4
 
                             RowLayout {

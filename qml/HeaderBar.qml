@@ -27,17 +27,18 @@ Rectangle {
         anchors.leftMargin: 12
         anchors.rightMargin: 12
 
-        // 1. Left section: Menu / Back button (Always on top & visible)
+        // 1. Left section: Menu / Back button (Visible only when in game)
         Row {
             id: leftSection
             z: 10
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             spacing: 8
+            visible: game.inGame
 
             CustomButton {
                 id: backBtn
-                iconText: "←"
+                iconName: "back"
                 text: root.width > 720 ? "Menu" : ""
                 fontSize: 14
                 implicitHeight: 44
@@ -47,7 +48,7 @@ Rectangle {
             }
         }
 
-        // 2. Right section: Actions (Always on top & pinned to right edge!)
+        // 2. Right section: Actions (Always on top & pinned to right edge)
         Row {
             id: rightSection
             z: 10
@@ -58,7 +59,7 @@ Rectangle {
 
             // Notes Button
             CustomButton {
-                iconText: "✎"
+                iconName: "pencil"
                 text: root.width > 760 ? "Notes" : ""
                 isActive: game.notesMode
                 fontSize: 14
@@ -68,38 +69,26 @@ Rectangle {
                 onClicked: game.toggleNotesMode()
             }
 
-            // Undo Button
+            // Undo Button (Clean vector icon, same style as other buttons)
             CustomButton {
-                iconText: "↺"
+                iconName: "undo"
                 text: ""
-                fontSize: 18
+                fontSize: 14
                 implicitHeight: 44
                 implicitWidth: 44
                 radius: 12
                 onClicked: game.undo()
             }
 
-            // Pause Button
+            // Pause Button (Clean vector icon in identical style to undo button)
             CustomButton {
-                iconText: game.isPaused ? "▶" : "⏸"
+                iconName: game.isPaused ? "play" : "pause"
                 text: ""
-                fontSize: 15
+                fontSize: 14
                 implicitHeight: 44
                 implicitWidth: 44
                 radius: 12
                 onClicked: game.togglePause()
-            }
-
-            // New Game Button (visible when width >= 580)
-            CustomButton {
-                visible: root.width >= 580
-                iconText: "+"
-                text: ""
-                fontSize: 20
-                implicitHeight: 44
-                implicitWidth: 44
-                radius: 12
-                onClicked: root.newGame()
             }
         }
 
@@ -235,13 +224,13 @@ Rectangle {
                     }
                 }
 
-                // Timer Badge
+                // Timer Badge (Magenta theme color)
                 Rectangle {
                     implicitHeight: 44
                     implicitWidth: timerRow.implicitWidth + 22
                     radius: 22
-                    color: theme.darkBackground
-                    border.color: theme.selection
+                    color: Qt.rgba(theme.magenta.r, theme.magenta.g, theme.magenta.b, 0.18)
+                    border.color: Qt.rgba(theme.magenta.r, theme.magenta.g, theme.magenta.b, 0.6)
                     border.width: 2
 
                     Row {
@@ -251,7 +240,7 @@ Rectangle {
                         Text {
                             text: "⏱"
                             font.pixelSize: 14
-                            color: theme.lightForeground
+                            color: theme.magenta
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -259,7 +248,7 @@ Rectangle {
                             font.pixelSize: 16
                             font.bold: true
                             font.family: "Monospace"
-                            color: theme.foreground
+                            color: theme.magenta
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }

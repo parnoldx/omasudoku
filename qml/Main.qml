@@ -20,12 +20,13 @@ ApplicationWindow {
         anchors.fill: parent
         spacing: 0
 
-        // Header Bar
+        // Header Bar (Visible only when in game or win view)
         HeaderBar {
             id: headerBar
+            visible: window.currentView !== "welcome"
             Layout.fillWidth: true
-            Layout.preferredHeight: 64
-            Layout.minimumHeight: 64
+            Layout.preferredHeight: window.currentView === "welcome" ? 0 : 68
+            Layout.minimumHeight: window.currentView === "welcome" ? 0 : 68
             onGoHome: {
                 if (game.inGame && !game.isFinished()) {
                     game.save_current_state();
