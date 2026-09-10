@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Sudoku
+GenericName=Sudoku Game
+Comment=Classic Sudoku puzzle game for Omarchy
+Exec=omarchy-sudoku
+Icon=org.omarchy.sudoku
+Terminal=false
+Type=Application
+Categories=Game;LogicGame;
+StartupWMClass=org.omarchy.sudoku
+Keywords=sudoku;puzzle;logic;board;numbers;
