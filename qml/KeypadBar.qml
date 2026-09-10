@@ -6,7 +6,10 @@ import "Components"
 Rectangle {
     id: root
 
-    height: 60
+    implicitHeight: 68
+    Layout.preferredHeight: 68
+    Layout.minimumHeight: 68
+    Layout.fillWidth: true
     color: theme.darkerBackground
 
     Rectangle {
@@ -26,21 +29,21 @@ Rectangle {
             iconText: "↺"
             text: ""
             fontSize: 16
-            implicitWidth: 42
-            implicitHeight: 42
-            radius: 8
+            implicitWidth: 44
+            implicitHeight: 44
+            radius: 10
             onClicked: game.undo()
         }
 
         // Notes Toggle
         CustomButton {
-            iconText: "✏️"
+            iconText: "✎"
             text: ""
             isActive: game.notesMode
-            fontSize: 14
-            implicitWidth: 42
-            implicitHeight: 42
-            radius: 8
+            fontSize: 15
+            implicitWidth: 44
+            implicitHeight: 44
+            radius: 10
             onClicked: game.toggleNotesMode()
         }
 
@@ -49,8 +52,10 @@ Rectangle {
             model: 9
             Item {
                 property int num: index + 1
-                implicitWidth: 42
-                implicitHeight: 42
+                implicitWidth: 44
+                implicitHeight: 44
+                Layout.preferredWidth: 44
+                Layout.preferredHeight: 44
 
                 // Check how many of this number are placed on board
                 property int countPlaced: {
@@ -66,20 +71,21 @@ Rectangle {
                 CustomButton {
                     anchors.fill: parent
                     text: parent.num.toString()
-                    fontSize: 18
-                    radius: 8
+                    fontSize: 19
+                    radius: 10
                     isActive: game.highlightNum === parent.num
                     opacity: parent.isAllPlaced ? 0.35 : 1.0
                     onClicked: game.enterNumber(parent.num)
                 }
 
-                // Small count indicator dot/text
+                // Small count indicator
                 Text {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 2
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: parent.isAllPlaced ? "✓" : (9 - parent.countPlaced).toString()
                     font.pixelSize: 8
+                    font.bold: true
                     color: parent.isAllPlaced ? theme.green : theme.muted
                 }
             }
@@ -90,9 +96,9 @@ Rectangle {
             iconText: "⌫"
             text: ""
             fontSize: 16
-            implicitWidth: 42
-            implicitHeight: 42
-            radius: 8
+            implicitWidth: 44
+            implicitHeight: 44
+            radius: 10
             onClicked: game.clearSelected()
         }
     }

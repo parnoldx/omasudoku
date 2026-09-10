@@ -6,12 +6,14 @@ import "Components"
 Rectangle {
     id: root
 
-    height: 56
+    implicitHeight: 68
+    height: 68
     color: theme.darkerBackground
 
     signal goHome()
     signal newGame()
 
+    // Bottom separator line
     Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -20,218 +22,249 @@ Rectangle {
         color: theme.selection
     }
 
-    RowLayout {
+    Item {
         anchors.fill: parent
-        anchors.leftMargin: 16
-        anchors.rightMargin: 16
-        spacing: 10
+        anchors.leftMargin: 12
+        anchors.rightMargin: 12
 
-        // Home / Back button
-        CustomButton {
-            id: backBtn
-            iconText: "←"
-            text: "Menu"
-            fontSize: 13
-            implicitHeight: 34
-            implicitWidth: 80
-            onClicked: root.goHome()
-        }
+        // 1. Left section: Menu / Back button (Always on top & visible)
+        Row {
+            id: leftSection
+            z: 10
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
 
-        // Score Badge
-        Rectangle {
-            visible: game.inGame
-            implicitHeight: 34
-            implicitWidth: scoreText.implicitWidth + 24
-            radius: 17
-            color: Qt.rgba(theme.yellow.r, theme.yellow.g, theme.yellow.b, 0.15)
-            border.color: Qt.rgba(theme.yellow.r, theme.yellow.g, theme.yellow.b, 0.4)
-            border.width: 1
-
-            Row {
-                anchors.centerIn: parent
-                spacing: 6
-                Text {
-                    text: "★"
-                    font.pixelSize: 13
-                    color: theme.yellow
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    id: scoreText
-                    text: game.points.toLocaleString()
-                    font.pixelSize: 14
-                    font.bold: true
-                    color: theme.yellow
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+            CustomButton {
+                id: backBtn
+                iconText: "←"
+                text: root.width > 720 ? "Menu" : ""
+                fontSize: 14
+                implicitHeight: 44
+                implicitWidth: text.length > 0 ? 88 : 44
+                radius: 12
+                onClicked: root.goHome()
             }
         }
 
-        // Factor / Multiplier Badge
-        Rectangle {
-            id: factorBadge
+        // 2. Right section: Actions (Always on top & pinned to right edge!)
+        Row {
+            id: rightSection
+            z: 10
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 6
             visible: game.inGame
-            implicitHeight: 34
-            implicitWidth: factorText.implicitWidth + 24
-            radius: 17
-            color: Qt.rgba(theme.accent.r, theme.accent.g, theme.accent.b, 0.15)
-            border.color: Qt.rgba(theme.accent.r, theme.accent.g, theme.accent.b, 0.4)
-            border.width: 1
 
-            Row {
-                anchors.centerIn: parent
-                spacing: 4
-                Text {
-                    text: "mult"
-                    font.pixelSize: 11
-                    color: theme.muted
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    id: factorText
-                    text: "x" + game.factor
-                    font.pixelSize: 14
-                    font.bold: true
-                    color: theme.accent
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+            // Notes Button
+            CustomButton {
+                iconText: "✎"
+                text: root.width > 760 ? "Notes" : ""
+                isActive: game.notesMode
+                fontSize: 14
+                implicitHeight: 44
+                implicitWidth: text.length > 0 ? 86 : 44
+                radius: 12
+                onClicked: game.toggleNotesMode()
             }
 
-            // Pulse on factor change
-            Connections {
-                target: game
-                function onFactorChanged() {
-                    factorPulseAnim.restart();
-                }
+            // Undo Button
+            CustomButton {
+                iconText: "↺"
+                text: ""
+                fontSize: 18
+                implicitHeight: 44
+                implicitWidth: 44
+                radius: 12
+                onClicked: game.undo()
             }
 
-            SequentialAnimation {
-                id: factorPulseAnim
-                PropertyAnimation { target: factorBadge; property: "scale"; to: 1.15; duration: 120 }
-                PropertyAnimation { target: factorBadge; property: "scale"; to: 1.0; duration: 180 }
+            // Pause Button
+            CustomButton {
+                iconText: game.isPaused ? "▶" : "⏸"
+                text: ""
+                fontSize: 15
+                implicitHeight: 44
+                implicitWidth: 44
+                radius: 12
+                onClicked: game.togglePause()
+            }
+
+            // New Game Button (visible when width >= 580)
+            CustomButton {
+                visible: root.width >= 580
+                iconText: "+"
+                text: ""
+                fontSize: 20
+                implicitHeight: 44
+                implicitWidth: 44
+                radius: 12
+                onClicked: root.newGame()
             }
         }
 
-        Item { Layout.fillWidth: true }
-
-        // Fails / Series Indicator (Center)
-        Rectangle {
-            visible: game.inGame
-            implicitHeight: 34
-            implicitWidth: failsContent.implicitWidth + 20
-            radius: 17
-            color: {
-                if (game.fails > 3) return Qt.rgba(theme.red.r, theme.red.g, theme.red.b, 0.2);
-                if (game.fails > 0) return Qt.rgba(theme.orange.r, theme.orange.g, theme.orange.b, 0.15);
-                return Qt.rgba(theme.green.r, theme.green.g, theme.green.b, 0.15);
-            }
-            border.width: 1
-            border.color: {
-                if (game.fails > 3) return theme.red;
-                if (game.fails > 0) return theme.orange;
-                return theme.green;
-            }
+        // 3. Center section: Large, bold stat bubbles strictly bounded between Left and Right
+        Item {
+            id: centerContainer
+            anchors.left: leftSection.right
+            anchors.right: rightSection.left
+            anchors.leftMargin: 6
+            anchors.rightMargin: 6
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
 
             Row {
-                id: failsContent
+                id: centerRow
                 anchors.centerIn: parent
-                spacing: 6
+                spacing: root.width > 640 ? 8 : 4
+                visible: game.inGame
 
-                Text {
-                    text: {
-                        if (game.fails === 0) return "✓ Perfect";
-                        if (game.fails === 1) return "✗ (1 fail)";
-                        if (game.fails === 2) return "✗ ✗ (2 fails)";
-                        if (game.fails === 3) return "✗ ✗ ✗ (last chance)";
-                        return "⚡ BROKEN SERIES (" + game.fails + ")";
+                // Score Badge (Large, bold, prominent)
+                Rectangle {
+                    implicitHeight: 44
+                    implicitWidth: scoreRow.implicitWidth + 24
+                    radius: 22
+                    color: Qt.rgba(theme.yellow.r, theme.yellow.g, theme.yellow.b, 0.18)
+                    border.color: Qt.rgba(theme.yellow.r, theme.yellow.g, theme.yellow.b, 0.6)
+                    border.width: 2
+
+                    Row {
+                        id: scoreRow
+                        anchors.centerIn: parent
+                        spacing: 6
+                        Text {
+                            text: "★"
+                            font.pixelSize: 16
+                            color: theme.yellow
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: game.points.toLocaleString()
+                            font.pixelSize: 17
+                            font.bold: true
+                            color: theme.yellow
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
-                    font.pixelSize: 12
-                    font.bold: true
+                }
+
+                // Multiplier Badge
+                Rectangle {
+                    id: factorBadge
+                    implicitHeight: 44
+                    implicitWidth: factorRow.implicitWidth + 22
+                    radius: 22
+                    color: Qt.rgba(theme.cyan.r, theme.cyan.g, theme.cyan.b, 0.18)
+                    border.color: Qt.rgba(theme.cyan.r, theme.cyan.g, theme.cyan.b, 0.6)
+                    border.width: 2
+
+                    Row {
+                        id: factorRow
+                        anchors.centerIn: parent
+                        spacing: 4
+                        Text {
+                            text: "×"
+                            font.pixelSize: 16
+                            font.bold: true
+                            color: theme.cyan
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: game.factor.toString()
+                            font.pixelSize: 17
+                            font.bold: true
+                            color: theme.cyan
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+
+                    Connections {
+                        target: game
+                        function onFactorChanged() {
+                            factorPulseAnim.restart();
+                        }
+                    }
+
+                    SequentialAnimation {
+                        id: factorPulseAnim
+                        PropertyAnimation { target: factorBadge; property: "scale"; to: 1.15; duration: 120 }
+                        PropertyAnimation { target: factorBadge; property: "scale"; to: 1.0; duration: 180 }
+                    }
+                }
+
+                // Fails / Series Badge
+                Rectangle {
+                    implicitHeight: 44
+                    implicitWidth: failsRow.implicitWidth + 24
+                    radius: 22
                     color: {
+                        if (game.fails > 3) return Qt.rgba(theme.red.r, theme.red.g, theme.red.b, 0.28);
+                        if (game.fails > 0) return Qt.rgba(theme.orange.r, theme.orange.g, theme.orange.b, 0.22);
+                        return Qt.rgba(theme.green.r, theme.green.g, theme.green.b, 0.2);
+                    }
+                    border.width: 2
+                    border.color: {
                         if (game.fails > 3) return theme.red;
                         if (game.fails > 0) return theme.orange;
                         return theme.green;
                     }
-                    anchors.verticalCenter: parent.verticalCenter
+
+                    Row {
+                        id: failsRow
+                        anchors.centerIn: parent
+                        spacing: 5
+
+                        Text {
+                            text: {
+                                var isNarrow = root.width < 660;
+                                if (game.fails === 0) return isNarrow ? "✓ 0" : "✓ Perfect";
+                                if (game.fails === 1) return isNarrow ? "✗ 1" : "✗ 1 Fail";
+                                if (game.fails === 2) return isNarrow ? "✗ 2" : "✗ 2 Fails";
+                                if (game.fails === 3) return isNarrow ? "✗ 3" : "✗ 3 Fails";
+                                return isNarrow ? "⚡ " + game.fails : "⚡ BROKEN (" + game.fails + ")";
+                            }
+                            font.pixelSize: 15
+                            font.bold: true
+                            color: {
+                                if (game.fails > 3) return theme.red;
+                                if (game.fails > 0) return theme.orange;
+                                return theme.green;
+                            }
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                // Timer Badge
+                Rectangle {
+                    implicitHeight: 44
+                    implicitWidth: timerRow.implicitWidth + 22
+                    radius: 22
+                    color: theme.darkBackground
+                    border.color: theme.selection
+                    border.width: 2
+
+                    Row {
+                        id: timerRow
+                        anchors.centerIn: parent
+                        spacing: 6
+                        Text {
+                            text: "⏱"
+                            font.pixelSize: 14
+                            color: theme.lightForeground
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: game.formattedTime
+                            font.pixelSize: 16
+                            font.bold: true
+                            font.family: "Monospace"
+                            color: theme.foreground
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
                 }
             }
-        }
-
-        Item { Layout.fillWidth: true }
-
-        // Timer Badge
-        Rectangle {
-            visible: game.inGame
-            implicitHeight: 34
-            implicitWidth: timerText.implicitWidth + 20
-            radius: 17
-            color: theme.darkBackground
-            border.color: theme.selection
-            border.width: 1
-
-            Row {
-                anchors.centerIn: parent
-                spacing: 6
-                Text {
-                    text: "⏱"
-                    font.pixelSize: 12
-                    color: theme.muted
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    id: timerText
-                    text: game.formattedTime
-                    font.pixelSize: 13
-                    font.bold: true
-                    font.family: "Monospace"
-                    color: theme.foreground
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-        }
-
-        // Notes Button
-        CustomButton {
-            visible: game.inGame
-            iconText: "✏️"
-            text: "Notes"
-            isActive: game.notesMode
-            fontSize: 12
-            implicitHeight: 34
-            implicitWidth: 80
-            onClicked: game.toggleNotesMode()
-        }
-
-        // Undo Button
-        CustomButton {
-            visible: game.inGame
-            iconText: "↺"
-            text: ""
-            fontSize: 14
-            implicitHeight: 34
-            implicitWidth: 38
-            onClicked: game.undo()
-        }
-
-        // Pause Button
-        CustomButton {
-            visible: game.inGame
-            iconText: game.isPaused ? "▶" : "⏸"
-            text: ""
-            fontSize: 14
-            implicitHeight: 34
-            implicitWidth: 38
-            onClicked: game.togglePause()
-        }
-
-        // New Game
-        CustomButton {
-            visible: game.inGame
-            text: "New"
-            fontSize: 12
-            implicitHeight: 34
-            implicitWidth: 60
-            onClicked: root.newGame()
         }
     }
 }

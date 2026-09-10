@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 Item {
     id: root
@@ -9,31 +10,44 @@ Item {
     property bool isPrimary: false
     property bool isOutlined: false
     property bool isActive: false
-    property color customColor: "transparent"
-    property color customTextColor: "transparent"
-    property int radius: 8
+    property string customColor: ""
+    property string customTextColor: ""
+    property int radius: 10
     property int fontSize: 14
 
     signal clicked()
 
-    implicitWidth: contentRow.implicitWidth + 24
-    implicitHeight: 40
+    implicitWidth: {
+        if (root.text.length > 0 && root.iconText.length > 0) {
+            return contentRow.implicitWidth + 24;
+        } else if (root.text.length > 0) {
+            return contentRow.implicitWidth + 24;
+        } else {
+            return implicitHeight;
+        }
+    }
+    implicitHeight: 42
+
+    Layout.preferredWidth: implicitWidth
+    Layout.minimumWidth: implicitWidth
+    Layout.preferredHeight: implicitHeight
+    Layout.minimumHeight: implicitHeight
 
     Rectangle {
         id: bg
         anchors.fill: parent
         radius: root.radius
-        border.width: root.isOutlined || root.isActive ? 2 : (mouseArea.containsMouse ? 1 : 0)
+        border.width: root.isOutlined || root.isActive ? 2 : 1
 
         border.color: {
             if (root.isActive) return theme.accent;
             if (root.isOutlined) return theme.accent;
-            if (mouseArea.containsMouse) return theme.selection;
-            return "transparent";
+            if (mouseArea.containsMouse) return theme.accent;
+            return theme.selection;
         }
 
         color: {
-            if (root.customColor !== "transparent") {
+            if (root.customColor.length > 0) {
                 return mouseArea.pressed ? Qt.darker(root.customColor, 1.2) : root.customColor;
             }
             if (root.isPrimary) {
@@ -52,32 +66,46 @@ Item {
             return theme.darkBackground;
         }
 
-        Behavior on color { ColorAnimation { duration: 150 } }
-        Behavior on border.color { ColorAnimation { duration: 150 } }
+        Behavior on color { ColorAnimation { duration: 120 } }
+        Behavior on border.color { ColorAnimation { duration: 120 } }
 
         Row {
             id: contentRow
             anchors.centerIn: parent
-            spacing: root.iconText.length > 0 && root.text.length > 0 ? 8 : 0
+            spacing: root.iconText.length > 0 && root.text.length > 0 ? 6 : 0
 
             Text {
+                textFormat: Text.PlainText
                 text: root.iconText
                 visible: root.iconText.length > 0
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: root.fontSize + 2
-                color: root.isPrimary ? theme.background :
-                       (root.customTextColor !== "transparent" ? root.customTextColor :
-                       (root.isActive ? theme.accent : theme.foreground))
+                font.pixelSize: root.fontSize + (root.text.length === 0 ? 4 : 1)
+                font.bold: true
+                font.family: "JetBrainsMono Nerd Font, Liberation Sans, monospace"
+                color: {
+                    if (root.isPrimary) return theme.background;
+                    if (root.customTextColor.length > 0) return root.customTextColor;
+                    if (root.isActive) return theme.accent;
+                    if (mouseArea.containsMouse) return theme.foreground;
+                    return theme.lightForeground;
+                }
             }
 
             Text {
+                textFormat: Text.PlainText
                 text: root.text
+                visible: root.text.length > 0
                 anchors.verticalCenter: parent.verticalCenter
                 font.pixelSize: root.fontSize
                 font.bold: root.isPrimary || root.isActive
-                color: root.isPrimary ? theme.background :
-                       (root.customTextColor !== "transparent" ? root.customTextColor :
-                       (root.isActive ? theme.accent : theme.foreground))
+                font.family: "JetBrainsMono Nerd Font, Liberation Sans, monospace"
+                color: {
+                    if (root.isPrimary) return theme.background;
+                    if (root.customTextColor.length > 0) return root.customTextColor;
+                    if (root.isActive) return theme.accent;
+                    if (mouseArea.containsMouse) return theme.foreground;
+                    return theme.lightForeground;
+                }
             }
         }
     }

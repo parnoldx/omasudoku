@@ -31,9 +31,9 @@ class SudokuGame(QObject):
     TIME_FACTOR_REDUCE = 34
     POINTS_BLOCK_ROW = 11.25
 
-    def __init__(self, parent=None):
+    def __init__(self, storage=None, parent=None):
         super().__init__(parent)
-        self.storage = StorageManager()
+        self.storage = storage if storage is not None else StorageManager()
 
         self._board = [0] * 81
         self._solution = [0] * 81
@@ -107,8 +107,8 @@ class SudokuGame(QObject):
         self.selectionChanged.emit()
         self.notesModeChanged.emit()
         self.gameStateChanged.emit()
-
-        self.save_current_state()
+        self.storage.delete_saved_game()
+        self.canResumeChanged.emit()
 
     @Slot()
     def resumeGame(self):
@@ -172,6 +172,11 @@ class SudokuGame(QObject):
     # --- Save & Storage ---
     def save_current_state(self):
         if not self._in_game or self.is_finished():
+            return
+        # Only persist if player made actual moves, notes, or spent time
+        has_moves = any(self._board[i] != 0 and not self._initial_clues[i] for i in range(81))
+        has_notes = any(len(n) > 0 for n in self._notes)
+        if not (has_moves or has_notes or self._time > 10):
             return
         state = {
             "difficulty": self._difficulty.key,

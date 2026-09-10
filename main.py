@@ -9,7 +9,7 @@ from pathlib import Path
 import signal
 import sys
 
-from PySide6.QtCore import QUrl, QCoreApplication
+from PySide6.QtCore import QUrl
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 
@@ -18,10 +18,7 @@ from src.theme import OmarchyTheme
 
 
 def main():
-    # Handle SIGINT cleanly
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-    # Wayland / App settings
     os.environ.setdefault("QT_QPA_PLATFORM", "wayland;xcb")
 
     app = QGuiApplication(sys.argv)
@@ -29,7 +26,6 @@ def main():
     app.setApplicationName("Sudoku")
     app.setDesktopFileName("org.omarchy.sudoku")
 
-    # Icon
     icon_path = Path(__file__).parent / "data" / "org.omarchy.sudoku.svg"
     if icon_path.is_file():
         app.setWindowIcon(QIcon(str(icon_path)))
@@ -42,10 +38,11 @@ def main():
     context.setContextProperty("theme", theme)
     context.setContextProperty("game", game)
 
-    # Save game on application exit if in progress
     def on_about_to_quit():
         if game.inGame and not game.is_finished():
-            game.save_current_state()
+            has_moves = any(game.board[i] != 0 and not game.initialClues[i] for i in range(81))
+            if has_moves or game.time > 10:
+                game.save_current_state()
 
     app.aboutToQuit.connect(on_about_to_quit)
 

@@ -10,19 +10,47 @@ from typing import Any, Optional
 
 
 class StorageManager:
-    def __init__(self):
-        data_dir = os.environ.get("XDG_DATA_HOME")
-        if data_dir:
-            self.base_dir = Path(data_dir) / "omarchy-sudoku"
+    def __init__(self, base_dir: Optional[Path | str] = None):
+        if base_dir:
+            self.base_dir = Path(base_dir)
         else:
-            self.base_dir = Path.home() / ".local" / "share" / "omarchy-sudoku"
+            data_dir = os.environ.get("XDG_DATA_HOME")
+            if data_dir:
+                self.base_dir = Path(data_dir) / "omarchy-sudoku"
+            else:
+                self.base_dir = Path.home() / ".local" / "share" / "omarchy-sudoku"
 
         self.base_dir.mkdir(parents=True, exist_ok=True)
         self.save_file = self.base_dir / "savegame.json"
         self.highscore_file = self.base_dir / "highscores.json"
 
     def has_saved_game(self) -> bool:
-        return self.save_file.is_file()
+        if not self.save_file.is_file():
+            return False
+        try:
+            with open(self.save_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if not isinstance(data, dict):
+                return False
+            board = data.get("board", [])
+            solution = data.get("solution", [])
+            if len(board) != 81 or len(solution) != 81:
+                return False
+            # If all cells are filled and match solution, game is already finished
+            if all(board[i] == solution[i] and board[i] != 0 for i in range(81)):
+                return False
+            # Check if game was actually played (at least one user entry, note, or >10s played)
+            initial_clues = data.get("initial_clues", [])
+            notes = data.get("notes", [])
+            time_spent = data.get("time", 0)
+            if initial_clues and len(initial_clues) == 81:
+                has_moves = any(board[i] != 0 and not initial_clues[i] for i in range(81))
+                has_notes = any(len(n) > 0 for n in notes) if notes else False
+                if not (has_moves or has_notes or time_spent > 10):
+                    return False
+            return True
+        except Exception:
+            return False
 
     def save_game(self, state: dict[str, Any]) -> None:
         try:
@@ -34,7 +62,7 @@ class StorageManager:
             print(f"Error saving game: {e}")
 
     def load_game(self) -> Optional[dict[str, Any]]:
-        if not self.has_saved_game():
+        if not self.save_file.is_file():
             return None
         try:
             with open(self.save_file, "r", encoding="utf-8") as f:

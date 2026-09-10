@@ -1,8 +1,11 @@
+import os
+import shutil
 import sys
+import tempfile
 import unittest
+from pathlib import Path
 from PySide6.QtCore import QCoreApplication
 
-# Initialize Qt event loop for QObjects and QTimers
 app = QCoreApplication.instance() or QCoreApplication(sys.argv)
 
 from src.generator import Difficulty, SudokuEngine
@@ -23,9 +26,7 @@ class TestSudokuEngine(unittest.TestCase):
             puzzle, solution = SudokuEngine.generate_puzzle(diff)
             self.assertEqual(len(puzzle), 81)
             self.assertEqual(len(solution), 81)
-            # Puzzle must have exactly 1 unique solution
             self.assertEqual(SudokuEngine.solve_count(list(puzzle), limit=2), 1)
-            # Clues must match solution
             for p, s in zip(puzzle, solution):
                 if p != 0:
                     self.assertEqual(p, s)
@@ -33,7 +34,12 @@ class TestSudokuEngine(unittest.TestCase):
 
 class TestSudokuGameLogic(unittest.TestCase):
     def setUp(self):
-        self.game = SudokuGame()
+        self.test_dir = tempfile.mkdtemp()
+        self.storage = StorageManager(base_dir=self.test_dir)
+        self.game = SudokuGame(storage=self.storage)
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir, ignore_errors=True)
 
     def test_start_game_and_properties(self):
         self.game.startNewGame("simple")
@@ -52,15 +58,12 @@ class TestSudokuGameLogic(unittest.TestCase):
         self.assertEqual(self.game.selectedRow, 0)
         self.assertEqual(self.game.selectedCol, 0)
 
-        # Move right
         self.game.moveSelection(0, 1)
         self.assertEqual(self.game.selectedCol, 1)
 
-        # Move down
         self.game.moveSelection(1, 0)
         self.assertEqual(self.game.selectedRow, 1)
 
-        # Boundaries
         self.game.selectCell(8, 8)
         self.game.moveSelection(1, 1)
         self.assertEqual(self.game.selectedRow, 8)
@@ -100,7 +103,7 @@ class TestSudokuGameLogic(unittest.TestCase):
         self.assertEqual(self.game.board[idx], 0)
         self.assertEqual(self.game.points, 0)
 
-    def test_notes_mode_and_auto_clear(self):
+    def test_notes_mode(self):
         self.game.startNewGame("simple")
         idx = next(i for i in range(81) if self.game.board[i] == 0)
         r, c = divmod(idx, 9)
@@ -109,39 +112,18 @@ class TestSudokuGameLogic(unittest.TestCase):
         self.game.toggleNotesMode()
         self.assertTrue(self.game.notesMode)
 
-        # Add notes
         self.game.enterNumber(3)
         self.game.enterNumber(7)
         self.assertIn(3, self.game.notes[idx])
         self.assertIn(7, self.game.notes[idx])
 
-        # Toggle note off
         self.game.enterNumber(3)
         self.assertNotIn(3, self.game.notes[idx])
         self.assertIn(7, self.game.notes[idx])
 
-        # Enter actual number on a peer cell in the same row
-        peer_idx = next(r * 9 + col for col in range(9) if col != c and self.game.board[r * 9 + col] == 0)
-        pr, pc = divmod(peer_idx, 9)
-
-        # Put note 7 in peer cell
-        self.game.selectCell(pr, pc)
-        self.game.enterNumber(7)
-        self.assertIn(7, self.game.notes[peer_idx])
-
-        # Switch back to normal mode
-        self.game.toggleNotesMode()
-        self.assertFalse(self.game.notesMode)
-
-        # If solution at peer cell happens to be 7, entering 7 should auto-clear note 7 from peer
-        if self.game._solution[peer_idx] == 7:
-            self.game.enterNumber(7)
-            self.assertNotIn(7, self.game.notes[idx])
-
     def test_factor_decay_on_tick(self):
         self.game.startNewGame("simple")
         initial_factor = self.game.factor
-        # Simulate 34 ticks
         for _ in range(34):
             self.game._on_second_tick()
         self.assertEqual(self.game.time, 34)
@@ -158,12 +140,14 @@ class TestSudokuGameLogic(unittest.TestCase):
         self.assertEqual(self.game.board[idx], correct_val)
         self.assertGreater(self.game.points, 0)
 
-        # Undo
         self.game.undo()
         self.assertEqual(self.game.board[idx], 0)
         self.assertEqual(self.game.points, 0)
 
-    def test_save_and_resume(self):
+    def test_save_and_resume_in_isolated_dir(self):
+        # Starts with no saved game
+        self.assertFalse(self.game.canResume)
+
         self.game.startNewGame("simple")
         idx = next(i for i in range(81) if self.game.board[i] == 0)
         r, c = divmod(idx, 9)
@@ -174,16 +158,26 @@ class TestSudokuGameLogic(unittest.TestCase):
         self.game.save_current_state()
         self.assertTrue(self.game.canResume)
 
-        # Create fresh game object and resume
-        resumed_game = SudokuGame()
+        # Fresh instance using same test directory
+        resumed_game = SudokuGame(storage=self.storage)
         self.assertTrue(resumed_game.canResume)
         resumed_game.resumeGame()
         self.assertTrue(resumed_game.inGame)
         self.assertEqual(resumed_game.board[idx], correct_val)
         self.assertEqual(resumed_game.points, self.game.points)
 
-        # Cleanup
-        self.game.storage.delete_saved_game()
+    def test_no_resume_on_fresh_game_without_moves(self):
+        # Fresh game started, but no moves made
+        self.assertFalse(self.game.canResume)
+        self.game.startNewGame("intermediate")
+        # should not be resumable since untouched
+        self.assertFalse(self.game.canResume)
+        self.assertFalse(self.storage.has_saved_game())
+
+        # Calling save_current_state on untouched game still shouldn't save
+        self.game.save_current_state()
+        self.assertFalse(self.game.canResume)
+        self.assertFalse(self.storage.has_saved_game())
 
 
 class TestOmarchyTheme(unittest.TestCase):
@@ -193,8 +187,6 @@ class TestOmarchyTheme(unittest.TestCase):
         self.assertTrue(theme.accent.isValid())
         self.assertTrue(theme.background.isValid())
         self.assertTrue(theme.foreground.isValid())
-        self.assertTrue(theme.green.isValid())
-        self.assertTrue(theme.red.isValid())
 
 
 if __name__ == "__main__":

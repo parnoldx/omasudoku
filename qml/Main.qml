@@ -8,8 +8,8 @@ ApplicationWindow {
     visible: true
     width: 820
     height: 800
-    minimumWidth: 500
-    minimumHeight: 560
+    minimumWidth: 460
+    minimumHeight: 520
     title: "Sudoku"
     color: theme.background
 
@@ -24,6 +24,8 @@ ApplicationWindow {
         HeaderBar {
             id: headerBar
             Layout.fillWidth: true
+            Layout.preferredHeight: 64
+            Layout.minimumHeight: 64
             onGoHome: {
                 if (game.inGame && !game.isFinished()) {
                     game.save_current_state();
@@ -63,20 +65,21 @@ ApplicationWindow {
                 anchors.fill: parent
                 visible: window.currentView === "game"
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    spacing: 0
+                KeypadBar {
+                    id: keypadBar
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 68
+                    z: 5
+                }
 
-                    BoardView {
-                        id: boardView
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                    }
-
-                    KeypadBar {
-                        id: keypadBar
-                        Layout.fillWidth: true
-                    }
+                BoardView {
+                    id: boardView
+                    anchors.top: parent.top
+                    anchors.bottom: keypadBar.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                 }
             }
 
@@ -109,9 +112,5 @@ ApplicationWindow {
             winView.finalTime = game.formattedTime;
             window.currentView = "win";
         }
-    }
-
-    Component.onCompleted: {
-        // If there's an unfinished game, prompt or show welcome with resume prominent
     }
 }
