@@ -1,5 +1,7 @@
 # Sudoku for Omarchy
 
+**Website:** [parnoldx.github.io/omasudoku](https://parnoldx.github.io/omasudoku/)
+
 A native Sudoku arcade puzzle for **Omarchy**, built with **C++/Qt6** and **Qt Quick (QML)**.
 
 Inspired by the arcade scoring and ergonomics of the earlier elementary OS game ([parnoldx/sudoku](https://github.com/parnoldx/sudoku)).
