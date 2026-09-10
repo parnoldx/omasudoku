@@ -9,6 +9,25 @@ Item {
     signal startGame(string difficultyKey)
     signal resumeGame()
 
+    // Bump so difficulty-card highscores re-read from disk after a win / return.
+    property int scoresTick: 0
+
+    onVisibleChanged: {
+        if (visible)
+            scoresTick++
+    }
+
+    Connections {
+        target: game
+        function onGameWon(points, fails, highscore, isNewRecord) {
+            root.scoresTick++
+        }
+        function onGameStateChanged() {
+            if (root.visible)
+                root.scoresTick++
+        }
+    }
+
     Flickable {
         anchors.fill: parent
         contentWidth: parent.width
@@ -229,7 +248,10 @@ Item {
                                 Item { Layout.fillWidth: true }
 
                                 Text {
-                                    property int hs: game.getHighscoreFor(modelData.key)
+                                    property int hs: {
+                                        var _tick = root.scoresTick
+                                        return game.getHighscoreFor(modelData.key)
+                                    }
                                     text: hs > 0 ? ("Best: " + hs.toLocaleString()) : "No record"
                                     font.pixelSize: 11
                                     font.bold: hs > 0

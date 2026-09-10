@@ -1,16 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <!-- Omarchy Sudoku: 3x3 colored grid logo badge matching the in-game jewel palette -->
-  <rect x="7" y="7" width="498" height="498" rx="105" fill="#222730" stroke="#81a1c1" stroke-width="14"/>
-  <!-- Top row: green, selection, cyan -->
-  <rect x="87" y="87" width="98" height="98" rx="21" fill="#a3be8c"/>
-  <rect x="207" y="87" width="98" height="98" rx="21" fill="#434c5e"/>
-  <rect x="327" y="87" width="98" height="98" rx="21" fill="#88c0d0"/>
-  <!-- Middle row: selection, yellow, selection -->
-  <rect x="87" y="207" width="98" height="98" rx="21" fill="#434c5e"/>
-  <rect x="207" y="207" width="98" height="98" rx="21" fill="#ebcb8b"/>
-  <rect x="327" y="207" width="98" height="98" rx="21" fill="#434c5e"/>
-  <!-- Bottom row: orange, selection, magenta -->
-  <rect x="87" y="327" width="98" height="98" rx="21" fill="#d5967a"/>
-  <rect x="207" y="327" width="98" height="98" rx="21" fill="#434c5e"/>
-  <rect x="327" y="327" width="98" height="98" rx="21" fill="#b48ead"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <rect width="40" height="40" rx="8" fill="#1a1b26"/>
+  <rect x="5" y="5" width="30" height="30" rx="6" fill="#202230" stroke="#92b4ff" stroke-width="1.2"/>
+  <rect x="9" y="9" width="6" height="6" rx="1.2" fill="#b2d984"/>
+  <rect x="17" y="9" width="6" height="6" rx="1.2" fill="#383d54"/>
+  <rect x="25" y="9" width="6" height="6" rx="1.2" fill="#7dcfff"/>
+  <rect x="9" y="17" width="6" height="6" rx="1.2" fill="#383d54"/>
+  <rect x="17" y="17" width="6" height="6" rx="1.2" fill="#e0af68"/>
+  <rect x="25" y="17" width="6" height="6" rx="1.2" fill="#383d54"/>
+  <rect x="9" y="25" width="6" height="6" rx="1.2" fill="#ff9e64"/>
+  <rect x="17" y="25" width="6" height="6" rx="1.2" fill="#383d54"/>
+  <rect x="25" y="25" width="6" height="6" rx="1.2" fill="#bb9af7"/>
 </svg>

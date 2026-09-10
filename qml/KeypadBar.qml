@@ -24,30 +24,8 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 8
 
-        // Undo
-        CustomButton {
-            iconName: "undo"
-            text: ""
-            fontSize: 14
-            implicitWidth: 44
-            implicitHeight: 44
-            radius: 10
-            onClicked: game.undo()
-        }
-
-        // Notes Toggle
-        CustomButton {
-            iconName: "pencil"
-            text: ""
-            isActive: game.notesMode
-            fontSize: 14
-            implicitWidth: 44
-            implicitHeight: 44
-            radius: 10
-            onClicked: game.toggleNotesMode()
-        }
-
-        // Numbers 1 to 9
+        // Numbers 1 to 9 (click highlights that number via enterNumber;
+        // Undo / Notes live in the header only)
         Repeater {
             model: 9
             Item {

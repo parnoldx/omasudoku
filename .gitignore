@@ -1,7 +1,8 @@
-__pycache__/
-*.py[cod]
-*$py.class
+build/
 *.swp
 *.swo
 *~
-.pytest_cache/
+.cache/
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
