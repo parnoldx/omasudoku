@@ -179,6 +179,21 @@ class TestSudokuGameLogic(unittest.TestCase):
         self.assertFalse(self.game.canResume)
         self.assertFalse(self.storage.has_saved_game())
 
+    def test_return_to_menu_pauses_and_saves(self):
+        self.game.startNewGame("simple")
+        idx = next(i for i in range(81) if self.game.board[i] == 0)
+        r, c = divmod(idx, 9)
+        self.game.selectCell(r, c)
+        self.game.enterNumber(self.game._solution[idx])
+
+        self.assertFalse(self.game.isFinished())
+        self.assertFalse(self.game.isPaused)
+
+        self.game.returnToMenu()
+        self.assertTrue(self.game.isPaused)
+        self.assertTrue(self.storage.has_saved_game())
+        self.assertTrue(self.game.canResume)
+
 
 class TestOmarchyTheme(unittest.TestCase):
     def test_theme_properties(self):

@@ -28,12 +28,11 @@ ApplicationWindow {
             Layout.preferredHeight: window.currentView === "welcome" ? 0 : 68
             Layout.minimumHeight: window.currentView === "welcome" ? 0 : 68
             onGoHome: {
-                if (game.inGame && !game.isFinished()) {
-                    game.save_current_state();
-                }
+                game.returnToMenu();
                 window.currentView = "welcome";
             }
             onNewGame: {
+                game.returnToMenu();
                 window.currentView = "welcome";
             }
         }

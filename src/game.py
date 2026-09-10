@@ -170,6 +170,14 @@ class SudokuGame(QObject):
             self.pauseGame()
 
     # --- Save & Storage ---
+    @Slot()
+    def returnToMenu(self):
+        """Pause game and persist progress when leaving to main menu."""
+        if self._in_game and not self.is_finished():
+            self.pauseGame()
+            self.save_current_state()
+
+    @Slot()
     def save_current_state(self):
         if not self._in_game or self.is_finished():
             return
@@ -365,6 +373,10 @@ class SudokuGame(QObject):
 
     def is_finished(self) -> bool:
         return all(self._board[i] == self._solution[i] and self._board[i] != 0 for i in range(81))
+
+    @Slot(result=bool)
+    def isFinished(self) -> bool:
+        return self.is_finished()
 
     def _on_won(self):
         self._timer.stop()
