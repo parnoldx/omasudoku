@@ -9,6 +9,9 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QUrl>
+#include <QTimer>
+#include <QQuickWindow>
+#include <QImage>
 #include <csignal>
 
 static QString findQmlMain(const QString &appDir)
@@ -93,6 +96,31 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty()) {
         qCritical("Error: Could not load QML user interface.");
         return 1;
+    }
+
+    // Docs screenshot: OMARCHY_SUDOKU_SCREENSHOT=/path/ingame.png starts a Medium
+    // game, grabs the window, writes PNG, then exits.
+    const QString shotPath = QString::fromLocal8Bit(qgetenv("OMARCHY_SUDOKU_SCREENSHOT"));
+    if (!shotPath.isEmpty()) {
+        QObject *root = engine.rootObjects().constFirst();
+        root->setProperty("currentView", QStringLiteral("game"));
+        game.startNewGame(QStringLiteral("easy"));
+        QTimer::singleShot(900, &app, [root, shotPath]() {
+            auto *win = qobject_cast<QQuickWindow *>(root);
+            if (!win) {
+                qCritical("Screenshot: root is not a QQuickWindow");
+                QCoreApplication::exit(1);
+                return;
+            }
+            const QImage img = win->grabWindow();
+            if (img.isNull() || !img.save(shotPath)) {
+                qCritical("Screenshot: failed to write %s", qPrintable(shotPath));
+                QCoreApplication::exit(1);
+                return;
+            }
+            qInfo("Wrote screenshot %s", qPrintable(shotPath));
+            QCoreApplication::exit(0);
+        });
     }
 
     return app.exec();

@@ -1,10 +1,10 @@
-# Sudoku for Omarchy
+# <img src="data/org.omarchy.sudoku.svg" alt="" width="28" height="28"> Sudoku for Omarchy
 
 **Website:** [parnoldx.github.io/omasudoku](https://parnoldx.github.io/omasudoku/)
 
 A native Sudoku arcade puzzle for **Omarchy**.
 
-![Omarchy Sudoku](data/org.omarchy.sudoku.svg)
+![Sudoku in-game on Omarchy](pictures/ingame.png)
 
 ---
 
