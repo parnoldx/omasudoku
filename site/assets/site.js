@@ -1,46 +1,5 @@
 "use strict";
 
-// Theme Switcher (Tokyo Night <-> Everforest)
-const themeButton = document.querySelector("[data-theme-toggle]");
-
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  const metaTheme = document.querySelector('meta[name="theme-color"]');
-  if (metaTheme) {
-    metaTheme.content = theme === "forest" ? "#272e29" : "#1a1b26";
-  }
-  if (themeButton) {
-    const name = theme === "forest" ? "Everforest" : "Tokyo Night";
-    const nameEl = themeButton.querySelector("[data-theme-name]");
-    if (nameEl) nameEl.textContent = name;
-    themeButton.setAttribute(
-      "aria-label",
-      `Color theme: ${name}. Switch to ${theme === "forest" ? "Tokyo Night" : "Everforest"}.`
-    );
-  }
-}
-
-try {
-  const saved = localStorage.getItem("sudoku-theme");
-  applyTheme(saved === "forest" ? "forest" : "night");
-} catch {
-  applyTheme("night");
-}
-
-if (themeButton) {
-  themeButton.hidden = false;
-  themeButton.addEventListener("click", () => {
-    const current = document.documentElement.dataset.theme;
-    const next = current === "forest" ? "night" : "forest";
-    applyTheme(next);
-    try {
-      localStorage.setItem("sudoku-theme", next);
-    } catch {
-      /* LocalStorage unavailable */
-    }
-  });
-}
-
 // Copy to Clipboard Buttons
 for (const button of document.querySelectorAll("[data-copy]")) {
   button.hidden = false;
