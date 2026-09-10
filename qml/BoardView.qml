@@ -5,6 +5,8 @@ Item {
     id: root
     focus: true
 
+    signal returnToMenu()
+
     // Center board square
     Rectangle {
         id: boardContainer
@@ -103,6 +105,14 @@ Item {
 
     // Keyboard Event Handling
     Keys.onPressed: function(event) {
+        // Return to Menu on Escape
+        if (event.key === Qt.Key_Escape) {
+            game.returnToMenu();
+            root.returnToMenu();
+            event.accepted = true;
+            return;
+        }
+
         // Pause toggle
         if (event.key === Qt.Key_P) {
             game.togglePause();

@@ -16,6 +16,16 @@ ApplicationWindow {
     // Current view state: "welcome", "game", "win"
     property string currentView: "welcome"
 
+    // Global Escape shortcut to return to menu from game
+    Shortcut {
+        sequence: "Escape"
+        enabled: window.currentView === "game"
+        onActivated: {
+            game.returnToMenu();
+            window.currentView = "welcome";
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
@@ -80,6 +90,9 @@ ApplicationWindow {
                     anchors.bottom: keypadBar.top
                     anchors.left: parent.left
                     anchors.right: parent.right
+                    onReturnToMenu: {
+                        window.currentView = "welcome";
+                    }
                 }
             }
 

@@ -71,13 +71,6 @@ Item {
                     font.letterSpacing: 4
                     color: theme.foreground
                 }
-
-                Text {
-                    Layout.alignment: Qt.AlignHCenter
-                    text: "Classic arcade puzzle game for Omarchy"
-                    font.pixelSize: 14
-                    color: theme.muted
-                }
             }
 
             // Resume Game Card (if saved game exists)

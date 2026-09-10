@@ -27,7 +27,7 @@ Rectangle {
         anchors.leftMargin: 12
         anchors.rightMargin: 12
 
-        // 1. Left section: Menu / Back button (Visible only when in game)
+        // 1. Left section: Menu button (Visible only when in game)
         Row {
             id: leftSection
             z: 10
@@ -38,11 +38,10 @@ Rectangle {
 
             CustomButton {
                 id: backBtn
-                iconName: "back"
-                text: root.width > 720 ? "Menu" : ""
+                text: "Menu"
                 fontSize: 14
                 implicitHeight: 44
-                implicitWidth: text.length > 0 ? 88 : 44
+                implicitWidth: 80
                 radius: 12
                 onClicked: root.goHome()
             }
