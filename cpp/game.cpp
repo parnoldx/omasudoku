@@ -386,6 +386,18 @@ void SudokuGame::checkCompletions(int row, int col)
         emit boxCompleted(boxIdx);
     }
 
+    // All 9 of the placed digit on the board -> celebrate that number
+    const int num = m_board[row * 9 + col];
+    if (num > 0) {
+        int count = 0;
+        for (int i = 0; i < 81; ++i) {
+            if (m_board[i] == num)
+                ++count;
+        }
+        if (count == 9)
+            emit numberCompleted(num);
+    }
+
     emit scoreChanged();
 }
 

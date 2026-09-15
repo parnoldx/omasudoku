@@ -109,6 +109,7 @@ signals:
     void rowCompleted(int row);
     void colCompleted(int col);
     void boxCompleted(int box);
+    void numberCompleted(int num);
     void gameWon(int points, int fails, int highscore, bool isNewRecord);
 
 private:

@@ -18,6 +18,7 @@ private slots:
     void completion_bonus();
     void factor_floor();
     void digit_highlight_on_filled_or_clue();
+    void number_completed_signal();
     void engine_generates_unique();
 };
 
@@ -138,6 +139,44 @@ void TestSudokuGame::completion_bonus()
     game.enterNumber(val);
     QCOMPARE(game.points(), val * factor + bonus);
     QCOMPARE(game.boardRaw()[1 * 9 + 8], 0);
+}
+
+void TestSudokuGame::number_completed_signal()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    StorageManager storage(dir.path());
+    SudokuGame game(&storage);
+    game.startNewGame(QStringLiteral("easy"));
+
+    QVector<int> solution = game.solutionRaw();
+    // Wipe every 3 from the board, then put them back one by one
+    QVector<int> board = solution;
+    QVector<int> threes;
+    for (int i = 0; i < 81; ++i) {
+        if (board[i] == 3) {
+            board[i] = 0;
+            threes.append(i);
+        }
+    }
+    game.boardRaw() = board;
+    for (int i = 0; i < 81; ++i)
+        game.initialCluesRaw()[i] = board[i] != 0;
+
+    int completedCount = 0;
+    connect(&game, &SudokuGame::numberCompleted, [&](int num) {
+        if (num == 3)
+            ++completedCount;
+    });
+
+    for (int n = 0; n < threes.size() - 1; ++n) {
+        game.selectCell(threes[n] / 9, threes[n] % 9);
+        game.enterNumber(3);
+        QCOMPARE(completedCount, 0);
+    }
+    game.selectCell(threes.last() / 9, threes.last() % 9);
+    game.enterNumber(3);
+    QCOMPARE(completedCount, 1);
 }
 
 void TestSudokuGame::factor_floor()

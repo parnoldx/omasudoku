@@ -212,6 +212,24 @@ Rectangle {
         onTriggered: waveAnim.restart()
     }
 
+    // Spin animation when all 9 of this cell's number are placed
+    SequentialAnimation {
+        id: spinAnim
+        PropertyAction { target: numberText; property: "rotation"; value: 0 }
+        PauseAnimation { duration: (root.row + root.col) * 40 }
+        NumberAnimation { target: numberText; property: "rotation"; to: 360; duration: 500; easing.type: Easing.InOutQuad }
+        PropertyAction { target: numberText; property: "rotation"; value: 0 }
+    }
+
+    Connections {
+        target: game
+
+        function onNumberCompleted(completedNum) {
+            if (completedNum === root.value)
+                spinAnim.restart();
+        }
+    }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
