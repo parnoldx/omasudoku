@@ -6,6 +6,8 @@ BIN_DIR="$HOME/.local/bin"
 APP_DESKTOP_DIR="$HOME/.local/share/applications"
 ICON_DIR="$HOME/.local/share/icons/hicolor/scalable/apps"
 BUILD_DIR="$APP_DIR/build"
+LIB_DIR="$HOME/.local/lib/omarchy-sudoku"
+mkdir -p "$LIB_DIR"
 
 mkdir -p "$BIN_DIR" "$APP_DESKTOP_DIR" "$ICON_DIR"
 
@@ -29,10 +31,12 @@ if [[ ! -x "$BUILD_DIR/omarchy-sudoku" ]]; then
 fi
 
 # 2. Launcher in ~/.local/bin (sets project root so QML/data resolve)
+cp -r "$BUILD_DIR/omarchy-sudoku" "$APP_DIR/qml" "$APP_DIR/data" "$LIB_DIR/"
+
 cat << LAUNCHER > "$BIN_DIR/omarchy-sudoku"
 #!/bin/bash
-export OMARCHY_SUDOKU_ROOT="$APP_DIR"
-exec "$BUILD_DIR/omarchy-sudoku" "\$@"
+export OMARCHY_SUDOKU_ROOT="$LIB_DIR"
+exec "$LIB_DIR/omarchy-sudoku" "\$@"
 LAUNCHER
 chmod +x "$BIN_DIR/omarchy-sudoku"
 
